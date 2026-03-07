@@ -1,0 +1,40 @@
+#!/bin/bash
+
+##############################################################################
+##
+##  Gradle startup script for UN*X
+##
+##############################################################################
+
+# Attempt to set APP_HOME
+# Resolve links: $0 may be a link
+PRG="$0"
+while [ -h "$PRG" ]; do
+  ls=-L "$PRG"
+  link=$(readlink "$PRG")
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=$(dirname "$PRG")"/$link"
+  fi
+done
+
+cd "$(dirname "$PRG")" >/dev/null
+APP_HOME="$(pwd -P)"
+cd - >/dev/null
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+# Determine the Java command to use to start the JVM
+if [ -n "$JAVA_HOME" ]; then
+  JAVACMD="$JAVA_HOME/bin/java"
+else
+  JAVACMD="java"
+fi
+
+# Execute Gradle
+exec "$JAVACMD" \
+  -Xmx64m \
+  -classpath "$CLASSPATH" \
+  org.gradle.wrapper.GradleWrapperMain \
+  "$@"

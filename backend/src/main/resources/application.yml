@@ -32,6 +32,10 @@ server:
   servlet:
     context-path: /api
 
+app:
+  jwt:
+    secret: "your-secret-key-change-this-in-production-at-least-256-bits-long-with-minimum-32-chars"
+
 logging:
   level:
     root: INFO
