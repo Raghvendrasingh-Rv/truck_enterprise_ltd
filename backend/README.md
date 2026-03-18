@@ -6,9 +6,9 @@ A comprehensive Spring Boot backend for a truck booking and management platform.
 
 - **Java**: 17
 - **Framework**: Spring Boot 3.2.0
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (Neon-compatible)
 - **Security**: Spring Security + JWT
-- **Build Tool**: Maven
+- **Build Tool**: Gradle Wrapper
 - **ORM**: Spring Data JPA with Hibernate
 
 ## Project Structure
@@ -27,35 +27,40 @@ src/main/java/com/truckplatform/
 ## Prerequisites
 
 - Java 17 or higher
-- Maven 3.6+
 - PostgreSQL 12+
 
 ## Building the Project
 
 ```bash
 cd backend
-mvn clean install
+./gradlew build
 ```
 
 ## Running the Application
 
 ```bash
-mvn spring-boot:run
+./gradlew bootRun
 ```
 
 The application will start on `http://localhost:8080/api`
 
 ## Database Configuration
 
-Update `src/main/resources/application.yml` with your PostgreSQL credentials:
+Create a local `.env` file in [`backend/`](/Users/raghvendra/Projects/Truck/backend) before starting the app. You can copy [`backend/.env.example`](/Users/raghvendra/Projects/Truck/backend/.env.example) and fill in your Neon values:
 
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/truck_platform
-    username: postgres
-    password: your_password
+```bash
+cp .env.example .env
 ```
+
+Example `.env`:
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://<your-neon-host>/<your-database>?sslmode=require
+SPRING_DATASOURCE_USERNAME=<your-neon-user>
+SPRING_DATASOURCE_PASSWORD=<your-neon-password>
+```
+
+The app imports `.env` from [`application.yml`](/Users/raghvendra/Projects/Truck/backend/src/main/resources/application.yml). If `.env` is missing, it falls back to a local PostgreSQL instance at `jdbc:postgresql://localhost:5432/truck_platform`.
 
 ## Key Dependencies
 

@@ -5,6 +5,10 @@ pom.xml.releaseBackup
 release.properties
 .flattened-pom.xml
 
+# Gradle
+.gradle/
+build/
+
 # IDE
 .idea/
 .vscode/

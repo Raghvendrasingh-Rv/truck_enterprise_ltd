@@ -1,11 +1,14 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   application:
     name: truck-booking-platform
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/truck_platform
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/truck_platform}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   
   jpa:
@@ -13,14 +16,9 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         jdbc:
           batch_size: 20
-  
-  sql:
-    init:
-      platform: postgresql
   
   jackson:
     serialization:
@@ -28,7 +26,7 @@ spring:
       indent-output: true
 
 server:
-  port: 8080
+  port: 8082
   servlet:
     context-path: /api
 

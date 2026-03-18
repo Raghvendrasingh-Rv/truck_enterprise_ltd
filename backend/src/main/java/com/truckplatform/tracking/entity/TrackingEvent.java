@@ -4,13 +4,15 @@ import com.truckplatform.bookings.entity.Booking;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tracking_events")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrackingEvent {
@@ -38,4 +40,14 @@ public class TrackingEvent {
     protected void onCreate() {
         timestamp = LocalDateTime.now();
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Booking getBooking() { return booking; }
+    public void setBooking(Booking booking) { this.booking = booking; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public TrackingEventStatus getStatus() { return status; }
+    public void setStatus(TrackingEventStatus status) { this.status = status; }
+    public LocalDateTime getTimestamp() { return timestamp; }
 }

@@ -2,10 +2,12 @@ package com.truckplatform.search.dto;
 
 import com.truckplatform.trucks.entity.TruckType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchTruckResponse {

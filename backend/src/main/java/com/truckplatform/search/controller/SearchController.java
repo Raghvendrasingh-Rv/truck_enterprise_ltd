@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/search")
+@RequestMapping("/search")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 public class SearchController {

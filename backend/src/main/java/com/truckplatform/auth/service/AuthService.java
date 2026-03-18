@@ -32,9 +32,6 @@ public class AuthService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
     /**
      * Register a new user
      */
