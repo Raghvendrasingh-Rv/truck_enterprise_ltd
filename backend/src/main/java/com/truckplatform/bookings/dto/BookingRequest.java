@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BookingRequest {
 
-    @NotNull(message = "Customer ID is required")
-    private Long customerId;
-
     @NotNull(message = "Truck ID is required")
     private Long truckId;
 

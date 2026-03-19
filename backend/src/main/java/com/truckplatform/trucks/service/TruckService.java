@@ -8,8 +8,6 @@ import com.truckplatform.trucks.entity.TruckStatus;
 import com.truckplatform.trucks.repository.TruckRepository;
 import com.truckplatform.transporters.entity.Transporter;
 import com.truckplatform.transporters.repository.TransporterRepository;
-import com.truckplatform.users.entity.User;
-import com.truckplatform.users.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,20 +26,12 @@ public class TruckService {
     @Autowired
     private TransporterRepository transporterRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     /**
      * Add a new truck for a transporter
      */
     @Transactional
-    public TruckResponse addTruck(String email, CreateTruckRequest request) {
-        // Get user and transporter
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Transporter transporter = transporterRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Transporter profile not found. Please create a transporter profile first."));
+    public TruckResponse addTruck(String transporterEmail, CreateTruckRequest request) {
+        Transporter transporter = getTransporterByEmail(transporterEmail);
 
         // Check if truck number already exists
         if (truckRepository.findByTruckNumber(request.getTruckNumber()).isPresent()) {
@@ -66,14 +56,11 @@ public class TruckService {
     /**
      * Get all trucks for a transporter
      */
-    public List<TruckResponse> getTrucksForTransporter(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public List<TruckResponse> getTrucksForTransporter(Long transporterId) {
+        Transporter transporter = transporterRepository.findById(transporterId)
+                .orElseThrow(() -> new RuntimeException("Transporter not found"));
 
-        Transporter transporter = transporterRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Transporter profile not found"));
-
-        List<Truck> trucks = truckRepository.findByTransporterId(transporter.getId());
+        List<Truck> trucks = truckRepository.findByTransporterId(transporterId);
         log.info("Retrieved {} trucks for transporter: {}", trucks.size(), transporter.getCompanyName());
 
         return trucks.stream()
@@ -82,22 +69,11 @@ public class TruckService {
     }
 
     /**
-     * Get a specific truck by ID (verify ownership)
+     * Get a specific truck by ID
      */
-    public TruckResponse getTruckById(String email, Long truckId) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Transporter transporter = transporterRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Transporter profile not found"));
-
+    public TruckResponse getTruckById(Long truckId) {
         Truck truck = truckRepository.findById(truckId)
                 .orElseThrow(() -> new RuntimeException("Truck not found"));
-
-        // Verify truck belongs to transporter
-        if (!truck.getTransporter().getId().equals(transporter.getId())) {
-            throw new RuntimeException("Unauthorized: Truck does not belong to your transporter account");
-        }
 
         return mapToResponse(truck);
     }
@@ -106,20 +82,10 @@ public class TruckService {
      * Update truck information
      */
     @Transactional
-    public TruckResponse updateTruck(String email, Long truckId, UpdateTruckRequest request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Transporter transporter = transporterRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Transporter profile not found"));
-
+    public TruckResponse updateTruck(String transporterEmail, Long truckId, UpdateTruckRequest request) {
         Truck truck = truckRepository.findById(truckId)
                 .orElseThrow(() -> new RuntimeException("Truck not found"));
-
-        // Verify truck belongs to transporter
-        if (!truck.getTransporter().getId().equals(transporter.getId())) {
-            throw new RuntimeException("Unauthorized: Truck does not belong to your transporter account");
-        }
+        validateOwnership(transporterEmail, truck);
 
         // Update fields if provided
         if (request.getTruckNumber() != null) {
@@ -157,20 +123,10 @@ public class TruckService {
      * Delete a truck
      */
     @Transactional
-    public void deleteTruck(String email, Long truckId) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Transporter transporter = transporterRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Transporter profile not found"));
-
+    public void deleteTruck(String transporterEmail, Long truckId) {
         Truck truck = truckRepository.findById(truckId)
                 .orElseThrow(() -> new RuntimeException("Truck not found"));
-
-        // Verify truck belongs to transporter
-        if (!truck.getTransporter().getId().equals(transporter.getId())) {
-            throw new RuntimeException("Unauthorized: Truck does not belong to your transporter account");
-        }
+        validateOwnership(transporterEmail, truck);
 
         truckRepository.delete(truck);
         log.info("Truck deleted: {}", truck.getTruckNumber());
@@ -189,5 +145,17 @@ public class TruckService {
         response.setStatus(truck.getStatus());
         response.setTransporterId(truck.getTransporter().getId());
         return response;
+    }
+
+    private Transporter getTransporterByEmail(String transporterEmail) {
+        return transporterRepository.findByEmailIgnoreCase(transporterEmail)
+                .orElseThrow(() -> new RuntimeException("Transporter not found"));
+    }
+
+    private void validateOwnership(String transporterEmail, Truck truck) {
+        Transporter transporter = getTransporterByEmail(transporterEmail);
+        if (!truck.getTransporter().getId().equals(transporter.getId())) {
+            throw new RuntimeException("Unauthorized: Truck does not belong to this transporter");
+        }
     }
 }

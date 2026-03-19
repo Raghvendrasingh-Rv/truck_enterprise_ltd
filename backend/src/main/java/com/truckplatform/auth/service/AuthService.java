@@ -5,12 +5,12 @@ import com.truckplatform.auth.dto.LoginResponse;
 import com.truckplatform.auth.dto.RegisterRequest;
 import com.truckplatform.auth.util.JwtTokenUtil;
 import com.truckplatform.users.entity.User;
+import com.truckplatform.users.entity.UserRole;
 import com.truckplatform.users.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,11 @@ public class AuthService {
         user.setEmail(registerRequest.getEmail());
         user.setPhone(registerRequest.getPhone());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setRole(registerRequest.getRole());
+        UserRole requestedRole = registerRequest.getRole() == null ? UserRole.CUSTOMER : registerRequest.getRole();
+        if (requestedRole != UserRole.CUSTOMER && requestedRole != UserRole.ADMIN) {
+            throw new IllegalArgumentException("Users can only register as CUSTOMER or ADMIN");
+        }
+        user.setRole(requestedRole);
 
         User savedUser = userRepository.save(user);
         log.info("User registered successfully: {}", savedUser.getEmail());
@@ -66,23 +70,28 @@ public class AuthService {
     public LoginResponse login(LoginRequest loginRequest) {
         try {
             // Authenticate user
-            Authentication authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
                             loginRequest.getPassword()
                     )
             );
 
-            // Load user details
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            
             // Find user from database to get full details
             User user = userRepository.findByEmail(loginRequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPasswordHash(),
+                    java.util.Collections.singletonList(
+                            new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole())
+                    )
+            );
+
             // Generate JWT token
             String role = user.getRole().name();
-            String token = jwtTokenUtil.generateTokenWithClaims(userDetails, role);
+            String token = jwtTokenUtil.generateTokenWithClaims(userDetails, role, false, null);
 
             log.info("User login successful: {}", user.getEmail());
 
@@ -93,6 +102,8 @@ public class AuthService {
                     user.getEmail(),
                     user.getName(),
                     user.getRole(),
+                    false,
+                    null,
                     "Bearer"
             );
         } catch (Exception ex) {

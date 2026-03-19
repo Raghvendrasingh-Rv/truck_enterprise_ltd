@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,13 +26,16 @@ public class BookingController {
     /**
      * Create a new booking
      *
-     * @param bookingRequest the booking request containing customer ID, truck ID, source, destination, and weight
+     * @param bookingRequest the booking request containing truck ID, source, destination, and weight
      * @return the created booking response
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<BookingResponse>> createBooking(@Valid @RequestBody BookingRequest bookingRequest) {
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<BookingResponse>> createBooking(
+            @Valid @RequestBody BookingRequest bookingRequest,
+            Authentication authentication) {
         try {
-            BookingResponse booking = bookingService.createBooking(bookingRequest);
+            BookingResponse booking = bookingService.createBooking(authentication.getName(), bookingRequest);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>(true, "Booking created successfully", booking));
         } catch (IllegalArgumentException e) {
@@ -49,9 +54,12 @@ public class BookingController {
      * @return the booking response
      */
     @GetMapping("/{bookingId}")
-    public ResponseEntity<ApiResponse<BookingResponse>> getBooking(@PathVariable Long bookingId) {
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('TRANSPORTER')")
+    public ResponseEntity<ApiResponse<BookingResponse>> getBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
         try {
-            BookingResponse booking = bookingService.getBooking(bookingId);
+            BookingResponse booking = bookingService.getBooking(authentication, bookingId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Booking retrieved successfully", booking));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -59,27 +67,17 @@ public class BookingController {
         }
     }
 
-    /**
-     * Get all bookings for a customer
-     *
-     * @param customerId the customer ID
-     * @return list of booking responses
-     */
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getBookingsByCustomer(@PathVariable Long customerId) {
-        List<BookingResponse> bookings = bookingService.getBookingsByCustomer(customerId);
+    @GetMapping("/customer/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getMyBookings(Authentication authentication) {
+        List<BookingResponse> bookings = bookingService.getBookingsByCustomer(authentication.getName());
         return ResponseEntity.ok(new ApiResponse<>(true, "Bookings retrieved successfully", bookings));
     }
 
-    /**
-     * Get all bookings for a truck
-     *
-     * @param truckId the truck ID
-     * @return list of booking responses
-     */
-    @GetMapping("/truck/{truckId}")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getBookingsByTruck(@PathVariable Long truckId) {
-        List<BookingResponse> bookings = bookingService.getBookingsByTruck(truckId);
+    @GetMapping("/transporter/me")
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getTransporterBookings(Authentication authentication) {
+        List<BookingResponse> bookings = bookingService.getBookingsByTransporter(authentication.getName());
         return ResponseEntity.ok(new ApiResponse<>(true, "Bookings retrieved successfully", bookings));
     }
 
@@ -108,9 +106,12 @@ public class BookingController {
      * @return the updated booking response
      */
     @PutMapping("/{bookingId}/accept")
-    public ResponseEntity<ApiResponse<BookingResponse>> acceptBooking(@PathVariable Long bookingId) {
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
+    public ResponseEntity<ApiResponse<BookingResponse>> acceptBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
         try {
-            BookingResponse booking = bookingService.acceptBooking(bookingId);
+            BookingResponse booking = bookingService.acceptBooking(authentication.getName(), bookingId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Booking accepted successfully", booking));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -128,9 +129,12 @@ public class BookingController {
      * @return the updated booking response
      */
     @PutMapping("/{bookingId}/start")
-    public ResponseEntity<ApiResponse<BookingResponse>> startBooking(@PathVariable Long bookingId) {
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
+    public ResponseEntity<ApiResponse<BookingResponse>> startBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
         try {
-            BookingResponse booking = bookingService.startBooking(bookingId);
+            BookingResponse booking = bookingService.startBooking(authentication.getName(), bookingId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Booking started successfully", booking));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -148,9 +152,12 @@ public class BookingController {
      * @return the updated booking response
      */
     @PutMapping("/{bookingId}/complete")
-    public ResponseEntity<ApiResponse<BookingResponse>> completeBooking(@PathVariable Long bookingId) {
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
+    public ResponseEntity<ApiResponse<BookingResponse>> completeBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
         try {
-            BookingResponse booking = bookingService.completeBooking(bookingId);
+            BookingResponse booking = bookingService.completeBooking(authentication.getName(), bookingId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Booking completed successfully", booking));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -168,9 +175,12 @@ public class BookingController {
      * @return the updated booking response
      */
     @PutMapping("/{bookingId}/cancel")
-    public ResponseEntity<ApiResponse<BookingResponse>> cancelBooking(@PathVariable Long bookingId) {
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('TRANSPORTER')")
+    public ResponseEntity<ApiResponse<BookingResponse>> cancelBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
         try {
-            BookingResponse booking = bookingService.cancelBooking(bookingId);
+            BookingResponse booking = bookingService.cancelBooking(authentication, bookingId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Booking cancelled successfully", booking));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

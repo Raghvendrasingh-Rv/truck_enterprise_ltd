@@ -32,15 +32,15 @@ public class TruckController {
      * POST /api/trucks
      */
     @PostMapping
-    @PreAuthorize("hasRole('TRANSPORTER')")
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
     public ResponseEntity<ApiResponse<TruckResponse>> addTruck(
             @Valid @RequestBody CreateTruckRequest request,
             Authentication authentication) {
         try {
-            String email = authentication.getName();
-            log.info("Adding truck: {} for user: {}", request.getTruckNumber(), email);
+            String transporterEmail = authentication.getName();
+            log.info("Adding truck: {} for transporter email: {}", request.getTruckNumber(), transporterEmail);
             
-            TruckResponse truck = truckService.addTruck(email, request);
+            TruckResponse truck = truckService.addTruck(transporterEmail, request);
             
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>(true, "Truck added successfully", truck));
@@ -56,18 +56,15 @@ public class TruckController {
     }
 
     /**
-     * Get all trucks for the authenticated transporter
-     * GET /api/trucks
+     * Get all trucks for a transporter
+     * GET /api/trucks/transporter/{transporterId}
      */
-    @GetMapping
-    @PreAuthorize("hasRole('TRANSPORTER')")
-    public ResponseEntity<ApiResponse<List<TruckResponse>>> getTrucks(
-            Authentication authentication) {
+    @GetMapping("/transporter/{transporterId}")
+    public ResponseEntity<ApiResponse<List<TruckResponse>>> getTrucks(@PathVariable Long transporterId) {
         try {
-            String email = authentication.getName();
-            log.info("Fetching trucks for transporter: {}", email);
+            log.info("Fetching trucks for transporter: {}", transporterId);
             
-            List<TruckResponse> trucks = truckService.getTrucksForTransporter(email);
+            List<TruckResponse> trucks = truckService.getTrucksForTransporter(transporterId);
             
             return ResponseEntity.ok()
                     .body(new ApiResponse<>(true, "Trucks retrieved successfully", trucks));
@@ -83,15 +80,11 @@ public class TruckController {
      * GET /api/trucks/{id}
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('TRANSPORTER')")
-    public ResponseEntity<ApiResponse<TruckResponse>> getTruckById(
-            @PathVariable Long id,
-            Authentication authentication) {
+    public ResponseEntity<ApiResponse<TruckResponse>> getTruckById(@PathVariable Long id) {
         try {
-            String email = authentication.getName();
-            log.info("Fetching truck: {} for transporter: {}", id, email);
+            log.info("Fetching truck: {}", id);
             
-            TruckResponse truck = truckService.getTruckById(email, id);
+            TruckResponse truck = truckService.getTruckById(id);
             
             return ResponseEntity.ok()
                     .body(new ApiResponse<>(true, "Truck retrieved successfully", truck));
@@ -111,16 +104,16 @@ public class TruckController {
      * PUT /api/trucks/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TRANSPORTER')")
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
     public ResponseEntity<ApiResponse<TruckResponse>> updateTruck(
             @PathVariable Long id,
             @Valid @RequestBody UpdateTruckRequest request,
             Authentication authentication) {
         try {
-            String email = authentication.getName();
-            log.info("Updating truck: {} for transporter: {}", id, email);
+            String transporterEmail = authentication.getName();
+            log.info("Updating truck: {} for transporter email: {}", id, transporterEmail);
             
-            TruckResponse truck = truckService.updateTruck(email, id, request);
+            TruckResponse truck = truckService.updateTruck(transporterEmail, id, request);
             
             return ResponseEntity.ok()
                     .body(new ApiResponse<>(true, "Truck updated successfully", truck));
@@ -144,15 +137,15 @@ public class TruckController {
      * DELETE /api/trucks/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('TRANSPORTER')")
+    @PreAuthorize("hasAuthority('TRANSPORTER')")
     public ResponseEntity<ApiResponse<Void>> deleteTruck(
             @PathVariable Long id,
             Authentication authentication) {
         try {
-            String email = authentication.getName();
-            log.info("Deleting truck: {} for transporter: {}", id, email);
+            String transporterEmail = authentication.getName();
+            log.info("Deleting truck: {} for transporter email: {}", id, transporterEmail);
             
-            truckService.deleteTruck(email, id);
+            truckService.deleteTruck(transporterEmail, id);
             
             return ResponseEntity.ok()
                     .body(new ApiResponse<>(true, "Truck deleted successfully", null));

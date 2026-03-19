@@ -46,6 +46,10 @@ public class SearchController {
             
             return ResponseEntity.ok()
                     .body(new ApiResponse<>(true, message, results));
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid search request: {}", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, ex.getMessage(), null));
         } catch (Exception ex) {
             log.error("Error searching trucks: ", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

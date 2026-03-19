@@ -2,40 +2,34 @@ package com.truckplatform.transporters.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateTransporterRequest {
+public class UpdateTransporterRequest {
 
-    @NotBlank(message = "Company name is required")
     private String companyName;
-
-    @NotBlank(message = "Transporter name is required")
     private String name;
 
-    @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
 
-    @NotBlank(message = "Mobile number is required")
     @Size(min = 10, max = 15, message = "Mobile number must be between 10 and 15 digits")
     private String mobileNumber;
 
     @Min(value = 0, message = "Years of experience cannot be negative")
     private Integer yearsOfExperience;
 
-    @NotBlank(message = "Address is required")
     private String address;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters")
-    private String password;
+    @Min(value = 0, message = "Rating cannot be negative")
+    private Double rating;
+
+    private Boolean verified;
 }

@@ -1,23 +1,20 @@
-package com.truckplatform.auth.dto;
+package com.truckplatform.transporters.dto;
 
-import com.truckplatform.users.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponse {
-    
+public class TransporterLoginResponse {
+
     private String token;
-    private Long userId;
+    private Long transporterId;
     private String email;
     private String name;
-    private UserRole role;
-    private Boolean transporter;
-    private Long transporterId;
+    private String companyName;
     private String tokenType = "Bearer";
 }

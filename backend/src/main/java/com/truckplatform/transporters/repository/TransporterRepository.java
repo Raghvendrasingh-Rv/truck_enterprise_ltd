@@ -8,7 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface TransporterRepository extends JpaRepository<Transporter, Long> {
-    Optional<Transporter> findByUserId(Long userId);
     List<Transporter> findByVerified(Boolean verified);
     List<Transporter> findByRatingGreaterThanEqual(Double rating);
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByMobileNumber(String mobileNumber);
+    Optional<Transporter> findByEmailIgnoreCase(String email);
+    Optional<Transporter> findByMobileNumber(String mobileNumber);
 }

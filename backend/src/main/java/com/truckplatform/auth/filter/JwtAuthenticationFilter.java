@@ -19,10 +19,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 @Component
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final Set<String> PUBLIC_AUTH_PATHS = Set.of("/auth/login", "/auth/register", "/transporter-auth/login");
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -36,10 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(token) && jwtTokenUtil.validateToken(token)) {
                 String email = jwtTokenUtil.extractEmail(token);
                 String role = jwtTokenUtil.extractRole(token);
+                Boolean transporter = jwtTokenUtil.extractTransporter(token);
+                String identityType = jwtTokenUtil.extractIdentityType(token);
                 
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 if (role != null) {
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                }
+                if (Boolean.TRUE.equals(transporter) || "TRANSPORTER".equals(identityType)) {
+                    authorities.add(new SimpleGrantedAuthority("TRANSPORTER"));
                 }
                 
                 UsernamePasswordAuthenticationToken authentication = 
@@ -48,10 +55,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            log.error("Cannot set user authentication: {}", ex.getMessage());
+            log.debug("Skipping JWT authentication: {}", ex.getMessage());
         }
         
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return PUBLIC_AUTH_PATHS.contains(request.getServletPath());
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {

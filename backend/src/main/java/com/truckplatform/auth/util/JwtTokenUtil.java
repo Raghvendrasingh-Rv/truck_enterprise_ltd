@@ -48,6 +48,23 @@ public class JwtTokenUtil {
                 .compact();
     }
 
+    public String generateTokenWithClaims(UserDetails userDetails, String role, boolean transporter, Long transporterId) {
+        return generateTokenWithClaims(userDetails, role, transporter, transporterId, transporter ? "TRANSPORTER" : "USER");
+    }
+
+    public String generateTokenWithClaims(UserDetails userDetails, String role, boolean transporter, Long transporterId, String identityType) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("role", role)
+                .claim("transporter", transporter)
+                .claim("transporterId", transporterId)
+                .claim("identityType", identityType)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + AuthConstants.JWT_EXPIRATION_MS))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
     /**
      * Extract email from JWT token
      */
@@ -60,6 +77,18 @@ public class JwtTokenUtil {
      */
     public String extractRole(String token) {
         return getClaims(token).get("role", String.class);
+    }
+
+    public Boolean extractTransporter(String token) {
+        return getClaims(token).get("transporter", Boolean.class);
+    }
+
+    public Long extractTransporterId(String token) {
+        return getClaims(token).get("transporterId", Long.class);
+    }
+
+    public String extractIdentityType(String token) {
+        return getClaims(token).get("identityType", String.class);
     }
 
     /**

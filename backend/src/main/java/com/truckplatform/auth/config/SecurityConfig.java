@@ -58,7 +58,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/search").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/transporter-auth/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/search/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/transporters/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/transporters/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/trucks/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cities").permitAll()
                         .requestMatchers("/health", "/info").permitAll()
                         .anyRequest().authenticated()
                 )
