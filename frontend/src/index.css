@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-paper text-ink antialiased;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+.app-shell {
+  @apply min-h-screen bg-gradient-to-br from-paper via-white to-mist;
+}
+
+.panel {
+  @apply rounded-2xl bg-white/90 shadow-card ring-1 ring-slate-200;
+}
+
+.action-button {
+  @apply inline-flex items-center justify-center rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pine;
+}
+
+.secondary-button {
+  @apply inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-slate-400 hover:bg-slate-50;
+}
+
+.field {
+  @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-amber-200;
+}
