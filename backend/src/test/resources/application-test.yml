@@ -17,3 +17,7 @@ spring:
         format_sql: true
         jdbc:
           batch_size: 20
+
+app:
+  jwt:
+    secret: test-jwt-secret-key-for-ci-at-least-32-characters
