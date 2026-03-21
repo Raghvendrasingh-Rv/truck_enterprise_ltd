@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Truck Bazaar">
+  <defs>
+    <linearGradient id="tb-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f27121" />
+      <stop offset="100%" stop-color="#c2410c" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#tb-grad)" />
+  <path d="M18 22h20c5.5 0 10 4.5 10 10v10h-8.5a5.5 5.5 0 0 1-11 0h-7v-20Z" fill="#fff" opacity=".96" />
+  <path d="M42 28h7l5 7v7h-12V28Z" fill="#fff" />
+  <circle cx="24" cy="42" r="4" fill="#1f2937" />
+  <circle cx="36" cy="42" r="4" fill="#1f2937" />
+  <circle cx="48" cy="42" r="4" fill="#1f2937" />
+</svg>
