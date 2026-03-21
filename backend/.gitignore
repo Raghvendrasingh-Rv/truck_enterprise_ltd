@@ -39,3 +39,5 @@ spring-boot-devtools.properties
 # OS
 .DS_Store
 Thumbs.db
+
+!gradle/wrapper/gradle-wrapper.jar
