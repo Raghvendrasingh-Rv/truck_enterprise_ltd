@@ -77,6 +77,44 @@ The app imports `.env` from [`application.yml`](/Users/raghvendra/Projects/Truck
 http://localhost:8080/api
 ```
 
+## Deploy To Render
+
+Use a Render Web Service with the `Docker` runtime.
+
+Recommended values:
+
+- Name: `truck-bazaar-api`
+- Runtime: `Docker`
+- Root Directory: `backend`
+
+Build and start commands are handled by:
+
+```text
+backend/Dockerfile
+```
+
+Required environment variables:
+
+```env
+SPRING_DATASOURCE_URL=jdbc:postgresql://<your-db-host>/<your-db-name>?sslmode=require
+SPRING_DATASOURCE_USERNAME=<your-db-user>
+SPRING_DATASOURCE_PASSWORD=<your-db-password>
+APP_JWT_SECRET=<your-long-random-secret>
+```
+
+The app now uses:
+
+```env
+PORT
+```
+
+from the hosting platform automatically through:
+
+```yml
+server:
+  port: ${PORT:8082}
+```
+
 ## Next Steps
 
 1. Create database entities in respective modules
