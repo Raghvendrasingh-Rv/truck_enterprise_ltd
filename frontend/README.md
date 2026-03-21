@@ -57,6 +57,37 @@ npm run dev
 npm run build
 ```
 
+## Deploy To Cloudflare Pages
+
+Use Cloudflare Pages Git integration for the `frontend/` app.
+
+Recommended Pages settings:
+
+- Framework preset: `Vite`
+- Root directory: `frontend`
+- Build command: `npm run build`
+- Build output directory: `dist`
+
+Required environment variable:
+
+```env
+VITE_API_BASE_URL=https://<your-backend-domain>/api
+```
+
+SPA routing is supported through:
+
+```text
+frontend/public/_redirects
+```
+
+which contains:
+
+```text
+/* /index.html 200
+```
+
+This ensures React Router routes like `/customer/bookings` and `/transporter/dashboard` work correctly on direct refresh in Cloudflare Pages.
+
 ## App Modes
 
 ### Public
