@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import BrandMark from "./BrandMark";
+import NotificationBell from "./NotificationBell";
 import { useAuth } from "../hooks/useAuth";
 
 export default function SidebarNav({ links }) {
@@ -23,6 +24,9 @@ export default function SidebarNav({ links }) {
           </NavLink>
         ))}
       </nav>
+      <div className="mt-6">
+        <NotificationBell />
+      </div>
       <button className="secondary-button mt-8 w-full" onClick={logout}>
         Logout
       </button>

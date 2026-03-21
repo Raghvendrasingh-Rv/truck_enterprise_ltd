@@ -45,6 +45,15 @@ const authService = {
     clearStoredAuth();
   },
 
+  syncAuth(patch) {
+    const current = getStoredAuth();
+    if (!current) return null;
+
+    const next = { ...current, ...patch };
+    setStoredAuth(next);
+    return next;
+  },
+
   getCurrentUser() {
     return getStoredAuth();
   },

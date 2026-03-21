@@ -7,6 +7,7 @@ import com.truckplatform.bookings.entity.BookingStatus;
 import com.truckplatform.bookings.repository.BookingRepository;
 import com.truckplatform.cities.entity.City;
 import com.truckplatform.cities.service.CityService;
+import com.truckplatform.notifications.service.NotificationService;
 import com.truckplatform.pricing.dto.PricingRequest;
 import com.truckplatform.pricing.dto.PricingResponse;
 import com.truckplatform.pricing.service.PricingService;
@@ -44,6 +45,9 @@ public class BookingService {
 
     @Autowired
     private TransporterRepository transporterRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     /**
      * Create a new booking
@@ -89,6 +93,7 @@ public class BookingService {
 
         // Save booking
         Booking savedBooking = bookingRepository.save(booking);
+        notificationService.notifyBookingCreated(savedBooking.getId(), savedBooking.getTruck().getTransporter().getId());
 
         return mapToResponse(savedBooking);
     }
@@ -166,6 +171,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.ACCEPTED);
         booking.getTruck().setStatus(TruckStatus.OFFLINE);
         Booking updatedBooking = bookingRepository.save(booking);
+        notificationService.notifyBookingAccepted(updatedBooking.getId(), updatedBooking.getCustomer().getId());
         return mapToResponse(updatedBooking);
     }
 
@@ -187,6 +193,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.IN_TRANSIT);
         booking.getTruck().setStatus(TruckStatus.IN_TRANSIT);
         Booking updatedBooking = bookingRepository.save(booking);
+        notificationService.notifyBookingInTransit(updatedBooking.getId(), updatedBooking.getCustomer().getId());
         return mapToResponse(updatedBooking);
     }
 
@@ -208,6 +215,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.DELIVERED);
         booking.getTruck().setStatus(TruckStatus.AVAILABLE);
         Booking updatedBooking = bookingRepository.save(booking);
+        notificationService.notifyBookingDelivered(updatedBooking.getId(), updatedBooking.getCustomer().getId());
         return mapToResponse(updatedBooking);
     }
 
@@ -229,6 +237,16 @@ public class BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         booking.getTruck().setStatus(TruckStatus.AVAILABLE);
         Booking updatedBooking = bookingRepository.save(booking);
+
+        if (authentication.getAuthorities().stream().anyMatch(authority -> "TRANSPORTER".equals(authority.getAuthority()))) {
+            notificationService.notifyBookingCancelledToCustomer(updatedBooking.getId(), updatedBooking.getCustomer().getId());
+        } else {
+            notificationService.notifyBookingCancelledToTransporter(
+                    updatedBooking.getId(),
+                    updatedBooking.getTruck().getTransporter().getId()
+            );
+        }
+
         return mapToResponse(updatedBooking);
     }
 
@@ -242,7 +260,24 @@ public class BookingService {
         BookingResponse response = new BookingResponse();
         response.setId(booking.getId());
         response.setCustomerId(booking.getCustomer().getId());
+        response.setCustomerName(booking.getCustomer().getName());
+        response.setCustomerEmail(booking.getCustomer().getEmail());
+        response.setCustomerPhone(booking.getCustomer().getPhone());
         response.setTruckId(booking.getTruck().getId());
+        response.setTruckNumber(booking.getTruck().getTruckNumber());
+        response.setTruckType(booking.getTruck().getTruckType());
+        response.setTruckCapacityKg(booking.getTruck().getCapacityKg());
+        response.setTruckLocationCity(booking.getTruck().getLocationCity());
+        response.setTruckStatus(booking.getTruck().getStatus());
+        response.setTransporterId(booking.getTruck().getTransporter().getId());
+        response.setTransporterName(booking.getTruck().getTransporter().getName());
+        response.setTransporterCompanyName(booking.getTruck().getTransporter().getCompanyName());
+        response.setTransporterEmail(booking.getTruck().getTransporter().getEmail());
+        response.setTransporterMobileNumber(booking.getTruck().getTransporter().getMobileNumber());
+        response.setTransporterYearsOfExperience(booking.getTruck().getTransporter().getYearsOfExperience());
+        response.setTransporterAddress(booking.getTruck().getTransporter().getAddress());
+        response.setTransporterRating(booking.getTruck().getTransporter().getRating());
+        response.setTransporterVerified(booking.getTruck().getTransporter().getVerified());
         response.setSource(booking.getSource());
         response.setDestination(booking.getDestination());
         response.setWeight(booking.getWeight());

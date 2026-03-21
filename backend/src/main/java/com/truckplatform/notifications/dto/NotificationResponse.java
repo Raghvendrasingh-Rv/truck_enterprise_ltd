@@ -15,9 +15,15 @@ public class NotificationResponse {
 
     private Long id;
 
-    private Long userId;
+    private String recipientType;
+
+    private Long recipientId;
+
+    private Long bookingId;
 
     private String type;
+
+    private String title;
 
     private String message;
 

@@ -10,7 +10,7 @@ const links = [
 export default function CustomerLayout() {
   return (
     <div className="app-shell">
-      <AppHeader links={links} />
+      <AppHeader links={links} modeLabel="Customer Workspace" />
       <main className="mx-auto max-w-7xl px-4 py-6 md:px-6">
         <Outlet />
       </main>

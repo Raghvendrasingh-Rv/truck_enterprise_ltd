@@ -27,6 +27,11 @@ export function AuthProvider({ children }) {
         return next;
       },
       registerTransporter: authService.registerTransporter,
+      syncAuth: (patch) => {
+        const next = authService.syncAuth(patch);
+        setAuth(next);
+        return next;
+      },
       logout: () => {
         authService.logout();
         setAuth(null);

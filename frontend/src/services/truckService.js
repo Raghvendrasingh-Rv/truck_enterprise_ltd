@@ -10,6 +10,11 @@ const truckService = {
     return data.data;
   },
 
+  async getTruckById(truckId) {
+    const { data } = await api.get(`/trucks/${truckId}`);
+    return data.data;
+  },
+
   async addTruck(payload) {
     const { data } = await api.post("/trucks", payload);
     return data.data;

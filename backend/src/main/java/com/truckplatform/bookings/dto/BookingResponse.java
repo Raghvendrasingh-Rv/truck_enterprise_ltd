@@ -1,6 +1,8 @@
 package com.truckplatform.bookings.dto;
 
 import com.truckplatform.bookings.entity.BookingStatus;
+import com.truckplatform.trucks.entity.TruckStatus;
+import com.truckplatform.trucks.entity.TruckType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +21,41 @@ public class BookingResponse {
 
     private Long customerId;
 
+    private String customerName;
+
+    private String customerEmail;
+
+    private String customerPhone;
+
     private Long truckId;
+
+    private String truckNumber;
+
+    private TruckType truckType;
+
+    private Long truckCapacityKg;
+
+    private String truckLocationCity;
+
+    private TruckStatus truckStatus;
+
+    private Long transporterId;
+
+    private String transporterName;
+
+    private String transporterCompanyName;
+
+    private String transporterEmail;
+
+    private String transporterMobileNumber;
+
+    private Integer transporterYearsOfExperience;
+
+    private String transporterAddress;
+
+    private Double transporterRating;
+
+    private Boolean transporterVerified;
 
     private String source;
 

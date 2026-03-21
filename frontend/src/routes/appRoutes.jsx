@@ -11,6 +11,7 @@ import CustomerProfilePage from "../pages/CustomerProfilePage";
 import CustomerSearchPage from "../pages/CustomerSearchPage";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
+import NotificationsPage from "../pages/NotificationsPage";
 import RegisterPage from "../pages/RegisterPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
 import TransporterBookingDetailPage from "../pages/TransporterBookingDetailPage";
@@ -43,6 +44,7 @@ export const appRoutes = [
           { path: "/customer/results", element: <SearchResultsPage /> },
           { path: "/customer/bookings", element: <CustomerBookingsPage /> },
           { path: "/customer/bookings/:id", element: <BookingDetailPage /> },
+          { path: "/customer/notifications", element: <NotificationsPage mode="CUSTOMER" /> },
           { path: "/customer/profile", element: <CustomerProfilePage /> },
         ],
       },
@@ -60,6 +62,7 @@ export const appRoutes = [
           { path: "/transporter/trucks/:id/edit", element: <TruckFormPage /> },
           { path: "/transporter/bookings", element: <TransporterBookingsPage /> },
           { path: "/transporter/bookings/:id", element: <TransporterBookingDetailPage /> },
+          { path: "/transporter/notifications", element: <NotificationsPage mode="TRANSPORTER" /> },
           { path: "/transporter/profile", element: <TransporterProfilePage /> },
         ],
       },

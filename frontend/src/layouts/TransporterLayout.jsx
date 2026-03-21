@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import SidebarNav from "../components/SidebarNav";
+import AppHeader from "../components/AppHeader";
 
 const links = [
   { label: "Dashboard", to: "/transporter/dashboard" },
@@ -11,8 +11,8 @@ const links = [
 export default function TransporterLayout() {
   return (
     <div className="app-shell">
-      <div className="mx-auto grid min-h-screen max-w-7xl gap-6 px-4 py-6 md:grid-cols-[260px_1fr] md:px-6">
-        <SidebarNav links={links} />
+      <AppHeader links={links} modeLabel="Transporter Operations" />
+      <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
         <main className="panel p-6">
           <Outlet />
         </main>
