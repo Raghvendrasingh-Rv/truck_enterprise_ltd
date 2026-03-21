@@ -3,7 +3,7 @@ import BrandMark from "./BrandMark";
 import NotificationBell from "./NotificationBell";
 import { useAuth } from "../hooks/useAuth";
 
-export default function AppHeader({ links, modeLabel }) {
+export default function AppHeader({ links }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -19,9 +19,6 @@ export default function AppHeader({ links, modeLabel }) {
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <BrandMark />
-              {/* {modeLabel ? (
-                <p className="mt-2 text-xs uppercase tracking-[0.28em] text-slate-500">{modeLabel}</p>
-              ) : null} */}
             </div>
 
             <div className="flex items-center gap-2 md:gap-3">

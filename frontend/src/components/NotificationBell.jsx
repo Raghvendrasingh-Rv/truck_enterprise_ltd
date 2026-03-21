@@ -67,7 +67,7 @@ export default function NotificationBell() {
         current.map((notification) => (notification.id === updated.id ? updated : notification))
       );
       setUnreadCount((current) => Math.max(0, current - 1));
-    } catch (err) {
+    } catch {
       setError("Unable to update notification");
     }
   };
@@ -77,7 +77,7 @@ export default function NotificationBell() {
       await notificationService.markAllAsRead();
       setNotifications((current) => current.map((notification) => ({ ...notification, read: true })));
       setUnreadCount(0);
-    } catch (err) {
+    } catch {
       setError("Unable to update notifications");
     }
   };

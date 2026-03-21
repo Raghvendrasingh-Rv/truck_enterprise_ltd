@@ -39,7 +39,7 @@ export default function NotificationsPage({ mode }) {
       setNotifications((current) =>
         current.map((notification) => (notification.id === updated.id ? updated : notification))
       );
-    } catch (err) {
+    } catch {
       setError("Unable to update notification");
     }
   };
